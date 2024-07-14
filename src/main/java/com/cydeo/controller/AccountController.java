@@ -4,6 +4,7 @@ package com.cydeo.controller;
 import com.cydeo.dto.AccountDTO;
 import com.cydeo.dto.ResponseWrapper;
 import com.cydeo.service.AccountService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class AccountController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ResponseWrapper> createAccount(@RequestBody AccountDTO accountDTO){
+    public ResponseEntity<ResponseWrapper> createAccount(@RequestBody @Valid AccountDTO accountDTO){
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseWrapper.builder().success(true)
