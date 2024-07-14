@@ -25,7 +25,8 @@ public class AccountController {
         return ResponseEntity.ok(ResponseWrapper.builder()
                 .success(true)
                 .message("Accounts are successfully retrieved.")
-                .code(HttpStatus.OK.value()).data(accountService.findAllByUsername(username))
+                .code(HttpStatus.OK.value())
+                .data(accountService.findAllByUsername(username))
                 .build());
 
 

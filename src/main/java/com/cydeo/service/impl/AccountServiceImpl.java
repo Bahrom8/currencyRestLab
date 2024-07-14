@@ -1,7 +1,10 @@
 package com.cydeo.service.impl;
 
+import com.cydeo.client.CurrencyClient;
 import com.cydeo.dto.AccountDTO;
 import com.cydeo.dto.UserDTO;
+import com.cydeo.dto.response.CurrencyData;
+import com.cydeo.dto.response.CurrencyResponse;
 import com.cydeo.entity.Account;
 import com.cydeo.entity.User;
 import com.cydeo.repository.AccountRepository;
@@ -10,7 +13,11 @@ import com.cydeo.service.UserService;
 import com.cydeo.util.MapperUtil;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,11 +26,13 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final UserService userService;
     private final MapperUtil mapperUtil;
+    private final CurrencyClient currencyClient;
 
-    public AccountServiceImpl(AccountRepository accountRepository, UserService userService, MapperUtil mapperUtil) {
+    public AccountServiceImpl(AccountRepository accountRepository, UserService userService, MapperUtil mapperUtil, CurrencyClient currencyClient) {
         this.accountRepository = accountRepository;
         this.userService = userService;
         this.mapperUtil = mapperUtil;
+        this.currencyClient = currencyClient;
     }
 
     /**
@@ -40,9 +49,41 @@ public class AccountServiceImpl implements AccountService {
                     // Convert each Account to an AccountDTO and set the username.
                     AccountDTO accountDTO = mapperUtil.convert(account, new AccountDTO());
                     accountDTO.setUsername(username);
+                    //assign some static values to otherCurrencies
+//                    Map<String, BigDecimal> otherCurrencies = new LinkedHashMap<>();
+//                    otherCurrencies.put("EUR", new BigDecimal(5234));
+//                    otherCurrencies.put("CAD", new BigDecimal(15234));
+
+                    accountDTO.setOtherCurrencies(getAllCurrenciesByBalance(accountDTO.getBalance()));
                     return accountDTO;
                 })
                 .collect(Collectors.toList());
+    }
+
+    private Map<String, BigDecimal> getAllCurrenciesByBalance(BigDecimal balance) {
+
+        //we need to send request to cydeoDev api to get currency exchange rates
+        CurrencyResponse allCurrencies = currencyClient.getAllCurrencies();
+        List<CurrencyData> currencyDataList = allCurrencies.getData();
+        System.out.println("currencyDataList = " + currencyDataList);
+
+        //create an empty map to set the values
+        Map<String, BigDecimal> otherCurrencies = new LinkedHashMap<>();
+
+        //calculate new balance for each currency code and assign balance values
+//        String currencyCode = currencyDataList.get(0).getCurrencyCode();
+//        BigDecimal currencyBalance = balance.multiply(currencyDataList.get(0).getUsdExchangeRate().setScale(2, RoundingMode.HALF_UP));
+//
+//        otherCurrencies.put(currencyCode, currencyBalance);
+
+        currencyDataList.forEach(eachCurrency -> {
+            String currencyCode = eachCurrency.getCurrencyCode();
+            BigDecimal currencyBalance = balance.multiply(eachCurrency.getUsdExchangeRate().setScale(2, RoundingMode.HALF_UP));
+            
+            otherCurrencies.put(currencyCode, currencyBalance);
+        });
+
+        return otherCurrencies;
     }
 
     /**
