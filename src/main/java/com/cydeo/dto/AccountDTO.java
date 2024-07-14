@@ -28,6 +28,6 @@ public class AccountDTO {
     private String username;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Map<String, BigDecimal> otherCurrencies;
+    private Map<String,BigDecimal> otherCurrencies;
 
 }
