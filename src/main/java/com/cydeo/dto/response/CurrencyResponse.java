@@ -1,9 +1,6 @@
 package com.cydeo.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,16 +9,12 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
+@ToString
 public class CurrencyResponse {
 
     private LocalDateTime dateTime;
-    private boolean success;
+    private Boolean success;
     private String httpStatus;
     private String message;
-
     private List<CurrencyData> data;
-
-
-
 }
