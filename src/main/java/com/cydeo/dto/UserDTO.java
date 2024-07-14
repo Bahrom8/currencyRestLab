@@ -27,5 +27,5 @@ public class UserDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<AccountDTO> accounts;
-    
+
 }
