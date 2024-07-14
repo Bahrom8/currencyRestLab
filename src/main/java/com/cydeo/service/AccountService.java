@@ -10,5 +10,6 @@ public interface AccountService {
 
     AccountDTO create (AccountDTO accountDTO);
 
+    List<AccountDTO> findAllByUsernameAndCurrencyList(String username, List<String> currencyList);
 
 }
